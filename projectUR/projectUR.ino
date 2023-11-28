@@ -4,6 +4,11 @@
 
 rgb_lcd lcd;
 
+#include <Encoder.h>
+
+Encoder myEnc(5, 4);
+
+
 
 void setup() 
 {
@@ -21,8 +26,16 @@ void setup()
 
 }
 
+int encoderValue  = 0;
+
 void loop() 
 {
+  // lav encoder om til godt tal
+  int encoderValue = myEnc.read();
+  int encoderValueCount = (encoderValue / 4 * (-1));
+
+  SwitchState(encoderValueCount);
+
   // put your main code here, to run repeatedly:
-  GaetTid();
+  //GaetTid();
 }

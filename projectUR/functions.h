@@ -2,7 +2,7 @@ void GaetTid ()
 {
   int buttonPressedCount = 1;
   int buttonState = 0; 
-  const int buttonPin = 4;
+  const int buttonPin = 3;
   int timeGuess = random(1000,10000);
 
   unsigned long startTime = 0;
@@ -56,5 +56,35 @@ void GaetTid ()
     }
 
     delay(100); // Debounce delay
+  }
+}
+
+void SwitchState (int count) 
+{
+  count = (count % 6) + 1;
+
+  if (count == 1) 
+  {
+    GaetTid();
+  }
+  if (count == 2) 
+  {
+    Serial.print("Encoder value er 2");
+  }
+  if (count == 3) 
+  {
+    Serial.print("Encoder value er 3");
+  }
+  if (count == 4) 
+  {
+    Serial.print("Encoder value er 4");
+  }
+  if (count == 5) 
+  {
+    Serial.print("Encoder value er 5");
+  }
+  if (count == 6) 
+  {
+    Serial.print("Encoder value er 6");
   }
 }
