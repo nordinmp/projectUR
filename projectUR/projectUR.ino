@@ -34,8 +34,8 @@ void loop()
   int encoderValue = myEnc.read();
   int encoderValueCount = (encoderValue / 4 * (-1));
 
-  SwitchState(encoderValueCount);
-
+  //SwitchState(encoderValueCount);
+  StopUr();
   // put your main code here, to run repeatedly:
   //GaetTid();
 }

@@ -72,22 +72,34 @@ if (running)
   time = millis() - startTime + elapsedTime;
 
 } else 
-
 {
   time = elapsedTime;
 }
-  let minutes = time / 60000 | 0; 
-  let seconds = (time % 60000) / 1000 | 0; 
-  let milliseconds = (time % 1000) / 10 | 0;
+
+  int minutes = time / 60000 | 0; 
+  int seconds = (time % 60000) / 1000 | 0; 
+  int milliseconds = (time % 1000) / 10 | 0;
+
+  Serial.println(minutes);
+  Serial.println(seconds);
+  Serial.println(milliseconds);
 
 
-
+}
 void startStop() 
 {
+
+  int startTime;
+  bool running = false;
+  int elapsedTime = 0;
+  int time;
+
+  running = false;
+
   if (running) 
   {
-    running = false;
-    elapsedTime += millis() - startTime;
+   running = false;
+   elapsedTime += millis() - startTime;
 
   } else 
 
@@ -99,11 +111,16 @@ void startStop()
 
 void reset() 
 {
+  int startTime;
+  bool running = false;
+  int elapsedTime = 0;
+  int time;
+
     running = false;
     elapsedTime = 0;
   
 }
-}
+
 
 void SwitchState (int count) 
 {
