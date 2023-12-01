@@ -59,6 +59,8 @@ void GaetTid ()
   }
 }
 
+void VaekUr() {}
+
 void SwitchState (int count) 
 {
   count = (count % 6) + 1;
