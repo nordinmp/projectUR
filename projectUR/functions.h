@@ -1,8 +1,13 @@
+void SwitchState (int count); // må ikke slettes det er en blank med vilje
+
+
 void GaetTid ()
 {
   int buttonPressedCount = 1;
-  int buttonState = 0; 
-  const int buttonPin = 3;
+  extern int buttonState; 
+  extern const int buttonPin;
+  extern int encoderValueCount;
+
   int timeGuess = random(1000,10000);
 
   unsigned long startTime = 0;
@@ -11,9 +16,9 @@ void GaetTid ()
   int yourTime = 0;
   int result = 0;
 
-  pinMode(buttonPin, INPUT);
+  bool playGame = true;
 
-  while(true) // We start a loop here to continuously check the button state
+  while(playGame == true) // We start a loop here to continuously check the button state
   {
     buttonState = digitalRead(buttonPin); // Update button state
 
@@ -29,7 +34,6 @@ void GaetTid ()
     else if(buttonState == HIGH && buttonPressedCount == 2)
     {
       startTime = millis(); // Store the start time
-      count = millis() - startTime; // Calculate the elapsed time
       yourTime = count;
       Serial.print("Tæller...");
       buttonPressedCount++;
@@ -44,6 +48,7 @@ void GaetTid ()
     }
     else if(buttonState == HIGH && buttonPressedCount == 4)
     {
+      count = millis() - startTime; // Calculate the elapsed time
       yourTime = count;
       Serial.print("Your time is: ");
       Serial.println(yourTime); // This line will print the value of yourTime
@@ -53,38 +58,46 @@ void GaetTid ()
       delay(50);
       buttonPressedCount = 1;
       buttonState = 0;
+
+      playGame = false;
     }
 
     delay(100); // Debounce delay
-  }
+  } 
+  SwitchState (encoderValueCount);
 }
 
 void SwitchState (int count) 
 {
   count = (count % 6) + 1;
 
-  if (count == 1) 
+  extern const int buttonPin;
+  extern int buttonState; 
+
+  buttonState = digitalRead(buttonPin);
+
+  if (count == 1 && buttonState == HIGH) 
   {
     GaetTid();
   }
-  if (count == 2) 
+  if (count == 2 && buttonState == HIGH) 
   {
-    Serial.print("Encoder value er 2");
+    Serial.println("Encoder value er 2");
   }
-  if (count == 3) 
+  if (count == 3 && buttonState == HIGH) 
   {
-    Serial.print("Encoder value er 3");
+    Serial.println("Encoder value er 3");
   }
-  if (count == 4) 
+  if (count == 4 && buttonState == HIGH) 
   {
-    Serial.print("Encoder value er 4");
+    Serial.println("Encoder value er 4");
   }
-  if (count == 5) 
+  if (count == 5 && buttonState == HIGH) 
   {
-    Serial.print("Encoder value er 5");
+    Serial.println("Encoder value er 5");
   }
-  if (count == 6) 
+  if (count == 6 && buttonState == HIGH) 
   {
-    Serial.print("Encoder value er 6");
+    Serial.println("Encoder value er 6");
   }
 }
