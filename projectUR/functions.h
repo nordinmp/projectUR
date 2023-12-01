@@ -59,7 +59,51 @@ void GaetTid ()
   }
 }
 
-void VaekUr() {}
+void StopUr() 
+{
+  int startTime;
+  bool running = false;
+  int elapsedTime = 0;
+  int time;
+
+
+if (running) 
+{
+  time = millis() - startTime + elapsedTime;
+
+} else 
+
+{
+  time = elapsedTime;
+}
+  let minutes = time / 60000 | 0; 
+  let seconds = (time % 60000) / 1000 | 0; 
+  let milliseconds = (time % 1000) / 10 | 0;
+
+
+
+void startStop() 
+{
+  if (running) 
+  {
+    running = false;
+    elapsedTime += millis() - startTime;
+
+  } else 
+
+  {
+    running = true;
+    startTime = millis();
+  }
+}
+
+void reset() 
+{
+    running = false;
+    elapsedTime = 0;
+  
+}
+}
 
 void SwitchState (int count) 
 {
