@@ -9,6 +9,12 @@ rgb_lcd lcd;
 Encoder myEnc(5, 4);
 
 
+int buttonPin = 3;
+int buttonState = 0; 
+int encoderValue  = 1;
+int encoderValueCount;
+
+
 
 void setup() 
 {
@@ -19,14 +25,13 @@ void setup()
   delay(1000);
   Serial.begin(9600);
 
-  const int buttonPin = 4;
-
   pinMode(buttonPin, INPUT);
-
-
 }
 
-int encoderValue  = 0;
+
+
+
+
 
 void loop() 
 {
