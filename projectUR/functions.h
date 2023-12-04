@@ -1,3 +1,8 @@
+#include "DS1307.h"
+#include "rgb_lcd.h"
+
+extern rgb_lcd lcd;
+
 void SwitchState (int count); // må ikke slettes det er en blank med vilje
 
 
@@ -126,6 +131,49 @@ void updateStopwatch()
 }
 
 
+DS1307 clock;
+
+void printTime() {
+    clock.getTime();
+    lcd.setCursor(0, 0);
+    lcd.print(clock.hour, DEC);
+    lcd.print(":");
+    lcd.print(clock.minute, DEC);
+    lcd.print(":");
+    lcd.print(clock.second, DEC);
+    lcd.print(" ");
+    lcd.setCursor(0, 1);
+    lcd.print(clock.month, DEC);
+    lcd.print("/");
+    lcd.print(clock.dayOfMonth, DEC);
+    lcd.print("/");
+    lcd.print(clock.year + 2000, DEC);
+    lcd.print(" ");
+    switch (clock.dayOfWeek) { // Friendly printout the weekday
+        case MON:
+            lcd.print("MON");
+            break;
+        case TUE:
+            lcd.print("TUE");
+            break;
+        case WED:
+            lcd.print("WED");
+            break;
+        case THU:
+            lcd.print("THU");
+            break;
+        case FRI:
+            lcd.print("FRI");
+            break;
+        case SAT:
+            lcd.print("SAT");
+            break;
+        case SUN:
+            lcd.print("SUN");
+            break;
+    }
+    Serial.println(" ");
+}
 
 
 
@@ -151,7 +199,7 @@ void SwitchState (int count)
  }
  if (count == 3 && buttonState == HIGH) 
  {
-  Serial.println("Encoder value er 3");
+  printTime();
   interruptActive = false;
   elapsedTime = 0;
 
