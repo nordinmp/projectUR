@@ -67,67 +67,95 @@ void GaetTid ()
   SwitchState (encoderValueCount);
 }
 
-void StopUr() 
-{
-  int startTime;
-  bool running = false;
-  int elapsedTime = 0;
-  int time;
+
+unsigned long startTid = 0;
+bool running = false;
+unsigned long elapsedTime = 0;
+int lastButtonState = LOW;
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 50;
+
+extern const int buttonPin;
+ 
 
 
-if (running) 
-{
-  time = millis() - startTime + elapsedTime;
 
-} else 
-{
-  time = elapsedTime;
-}
-
-  int minutes = time / 60000 | 0; 
-  int seconds = (time % 60000) / 1000 | 0; 
-  int milliseconds = (time % 1000) / 10 | 0;
-
-  Serial.println(minutes);
-  Serial.println(seconds);
-  Serial.println(milliseconds);
-
-
-}
 void startStop() 
 {
-
-  int startTime;
-  bool running = false;
-  int elapsedTime = 0;
-  int time;
-
-  running = false;
-
   if (running) 
   {
-   running = false;
-   elapsedTime += millis() - startTime;
-
-  } else 
-
-  {
+    // If running, stop the stopwatch
+    running = false;
+    elapsedTime = millis() - startTid;
+  } else {
+    // If not running, start the stopwatch
     running = true;
-    startTime = millis();
+    startTid = millis() - elapsedTime;
   }
 }
 
-void reset() 
+void updateStopwatch() 
 {
-  int startTime;
-  bool running = false;
-  int elapsedTime = 0;
-  int time;
+  unsigned long time;
 
-    running = false;
-    elapsedTime = 0;
-  
+  if (running) 
+  {
+    // If running, calculate elapsed time
+    time = millis() - startTid;
+  } else {
+    // If not running, use the stored elapsed time
+    time = elapsedTime;
+  }
+
+  // Convert time to minutes, seconds, and milliseconds
+  int minutes = time / 60000;
+  int seconds = (time % 60000) / 1000;
+  int milliseconds = (time % 1000) / 10;
+
+  // Print the time to the Serial Monitor
+  Serial.print("Time: ");
+  Serial.print(minutes);
+  Serial.print("m ");
+  Serial.print(seconds);
+  Serial.print("s ");
+  Serial.print(milliseconds);
+  Serial.println("ms");
 }
+
+void StopUr() 
+{
+  // Local variable for button state
+  int buttonState = digitalRead(buttonPin);
+
+  // Check if the button state has changed
+  if (buttonState != lastButtonState) 
+  {
+    // Reset the debouncing timer
+    lastDebounceTime = millis();
+  }
+
+  // Check if the button state has been stable for the debounce delay
+  if ((millis() - lastDebounceTime) > debounceDelay) 
+  {
+    // Check if the button is pressed
+    if (buttonState == HIGH) 
+    {
+      startStop();
+    }
+  }
+
+  // Update the stopwatch display
+  updateStopwatch();
+
+  // Save the current button state for the next iteration
+  lastButtonState = buttonState;
+}
+
+
+
+
+
+
 
 
 void SwitchState (int count) 

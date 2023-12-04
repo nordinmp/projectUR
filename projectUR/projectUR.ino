@@ -9,7 +9,7 @@ rgb_lcd lcd;
 Encoder myEnc(5, 4);
 
 
-int buttonPin = 3;
+const int buttonPin = 3;
 int buttonState = 0; 
 int encoderValue  = 1;
 int encoderValueCount;
