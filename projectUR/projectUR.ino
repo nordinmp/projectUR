@@ -26,11 +26,10 @@ void setup()
   Serial.begin(9600);
 
   pinMode(buttonPin, INPUT);
+
+  attachInterrupt(digitalPinToInterrupt(buttonPin), startStop, FALLING);
+
 }
-
-
-
-
 
 
 void loop() 
@@ -39,8 +38,12 @@ void loop()
   int encoderValue = myEnc.read();
   int encoderValueCount = (encoderValue / 4 * (-1));
 
-  //SwitchState(encoderValueCount);
-  StopUr();
+  SwitchState(encoderValueCount);
+
+  if (interruptActive == true) {
+      updateStopwatch();
+  }
+  //StopUr();
   // put your main code here, to run repeatedly:
   //GaetTid();
 }

@@ -67,92 +67,63 @@ void GaetTid ()
   SwitchState (encoderValueCount);
 }
 
-
-unsigned long startTid = 0;
-bool running = false;
-unsigned long elapsedTime = 0;
-int lastButtonState = LOW;
-unsigned long lastDebounceTime = 0;
-unsigned long debounceDelay = 50;
-
 extern const int buttonPin;
  
+// Define the state of the stopwatch
+bool running = false;
+
+// Define the start time and elapsed time
+unsigned long startTid;
+unsigned long elapsedTime = 0;
+
+// Define a flag to control when the interrupt should be active
+bool interruptActive = false;
 
 
 
 void startStop() 
 {
-  if (running) 
-  {
-    // If running, stop the stopwatch
-    running = false;
-    elapsedTime = millis() - startTid;
-  } else {
-    // If not running, start the stopwatch
-    running = true;
-    startTid = millis() - elapsedTime;
-  }
+ if (running) 
+ {
+  // If running, stop the stopwatch
+  running = false;
+  elapsedTime = millis() - startTid;
+ } 
+ else 
+ {
+  // If not running, start the stopwatch
+  running = true;
+  startTid = millis() - elapsedTime;
+ }
 }
 
-void updateStopwatch() 
+
+void updateStopwatch()
 {
-  unsigned long time;
+ unsigned long time;
 
-  if (running) 
-  {
-    // If running, calculate elapsed time
-    time = millis() - startTid;
-  } else {
-    // If not running, use the stored elapsed time
-    time = elapsedTime;
-  }
+ if (running) {
+ // If running, calculate elapsed time
+ time = millis() - startTid;
+ } else {
+ // If not running, use the stored elapsed time
+  time = elapsedTime;
+ }
 
-  // Convert time to minutes, seconds, and milliseconds
-  int minutes = time / 60000;
-  int seconds = (time % 60000) / 1000;
-  int milliseconds = (time % 1000) / 10;
+ // Convert time to minutes, seconds, and milliseconds
+ int minutes = time / 60000;
+ int seconds = (time % 60000) / 1000;
+ int milliseconds = (time % 1000) / 10;
 
-  // Print the time to the Serial Monitor
-  Serial.print("Time: ");
-  Serial.print(minutes);
-  Serial.print("m ");
-  Serial.print(seconds);
-  Serial.print("s ");
-  Serial.print(milliseconds);
-  Serial.println("ms");
+ // Print the time to the Serial Monitor
+ Serial.print("Time: ");
+ Serial.print(minutes);
+ Serial.print("m ");
+ Serial.print(seconds);
+ Serial.print("s ");
+ Serial.print(milliseconds);
+ Serial.println("ms");
 }
-
-void StopUr() 
-{
-  // Local variable for button state
-  int buttonState = digitalRead(buttonPin);
-
-  // Check if the button state has changed
-  if (buttonState != lastButtonState) 
-  {
-    // Reset the debouncing timer
-    lastDebounceTime = millis();
-  }
-
-  // Check if the button state has been stable for the debounce delay
-  if ((millis() - lastDebounceTime) > debounceDelay) 
-  {
-    // Check if the button is pressed
-    if (buttonState == HIGH) 
-    {
-      startStop();
-    }
-  }
-
-  // Update the stopwatch display
-  updateStopwatch();
-
-  // Save the current button state for the next iteration
-  lastButtonState = buttonState;
-}
-
-
-
 
 
 
@@ -160,35 +131,47 @@ void StopUr()
 
 void SwitchState (int count) 
 {
-  count = (count % 6) + 1;
+ count = (count % 6) + 1;
 
-  extern const int buttonPin;
-  extern int buttonState; 
+ extern const int buttonPin;
+ //extern int buttonState; 
 
-  buttonState = digitalRead(buttonPin);
+ int buttonState = digitalRead(buttonPin);
 
-  if (count == 1 && buttonState == HIGH) 
-  {
-    GaetTid();
-  }
-  if (count == 2 && buttonState == HIGH) 
-  {
-    Serial.println("Encoder value er 2");
-  }
-  if (count == 3 && buttonState == HIGH) 
-  {
-    Serial.println("Encoder value er 3");
-  }
-  if (count == 4 && buttonState == HIGH) 
-  {
-    Serial.println("Encoder value er 4");
-  }
-  if (count == 5 && buttonState == HIGH) 
-  {
-    Serial.println("Encoder value er 5");
-  }
-  if (count == 6 && buttonState == HIGH) 
-  {
-    Serial.println("Encoder value er 6");
-  }
+ if (count == 1 && buttonState == HIGH) 
+ {
+  GaetTid();
+  elapsedTime = 0;
+  interruptActive = false;
+ }
+ if (count == 2 && buttonState == HIGH) 
+ {
+  // Set the interrupt to active
+  interruptActive = true;
+ }
+ if (count == 3 && buttonState == HIGH) 
+ {
+  Serial.println("Encoder value er 3");
+  interruptActive = false;
+  elapsedTime = 0;
+
+ }
+ if (count == 4 && buttonState == HIGH) 
+ {
+  elapsedTime = 0;
+  interruptActive = false;
+  Serial.println("Encoder value er 4");
+ }
+ if (count == 5 && buttonState == HIGH) 
+ {
+  elapsedTime = 0;
+  interruptActive = false;
+  Serial.println("Encoder value er 5");
+ }
+ if (count == 6 && buttonState == HIGH) 
+ {
+  elapsedTime = 0;
+  interruptActive = false;
+  Serial.println("Encoder value er 6");
+ }
 }
