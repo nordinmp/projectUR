@@ -21,6 +21,7 @@ const int colorG = 0;
 const int colorB = 0;
 
 
+
 void setup() 
 {
   // put your setup code here, to run once:
@@ -53,15 +54,17 @@ void setup()
 
 void loop() 
 {
+
   // lav encoder om til godt tal
   int encoderValue = myEnc.read();
   int encoderValueCount = (encoderValue / 4 * (-1));
-
-  SwitchState(encoderValueCount);
+  //SwitchState(encoderValueCount);
 
   if (interruptActive == true) {
       updateStopwatch();
   }
+
+  kogAeg(encoderValueCount);
   //StopUr();
   // put your main code here, to run repeatedly:
   //GaetTid();

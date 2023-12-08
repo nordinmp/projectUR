@@ -29,42 +29,69 @@ void GaetTid ()
 
     if (buttonState == HIGH && buttonPressedCount == 1) 
     {
-      Serial.print("Tryk når du tror tiden er gået");
-      Serial.print("Tiden du skal gætte er ");
-      Serial.print(timeGuess);
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Tryk når tiden");
+      lcd.setCursor(0, 1);
+      lcd.print("er gået");
       delay(50);
       buttonPressedCount++;
       buttonState = 0;
     }
-    else if(buttonState == HIGH && buttonPressedCount == 2)
+    else if (buttonState == HIGH && buttonPressedCount == 2) 
     {
-      startTime = millis(); // Store the start time
-      yourTime = count;
-      Serial.print("Tæller...");
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Gæt tiden: ");
+      lcd.setCursor(0, 1);
+      lcd.print(timeGuess);
+      delay(50);
       buttonPressedCount++;
       buttonState = 0;
     }
     else if(buttonState == HIGH && buttonPressedCount == 3)
     {
-      Serial.print("Tryk igen for at se resultater");
-      delay(50);
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      startTime = millis(); // Store the start time
+      yourTime = count;
+      lcd.print("Tæller...");
       buttonPressedCount++;
       buttonState = 0;
     }
     else if(buttonState == HIGH && buttonPressedCount == 4)
     {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("Tryk igen for at");
+      lcd.setCursor(0, 1);
+      lcd.print("se resultater");
+      delay(50);
+      buttonPressedCount++;
+      buttonState = 0;
+    }
+    else if(buttonState == HIGH && buttonPressedCount == 5)
+    {
+      lcd.clear();
+      lcd.setCursor(0, 0);
       count = millis() - startTime; // Calculate the elapsed time
       yourTime = count;
-      Serial.print("Your time is: ");
-      Serial.println(yourTime); // This line will print the value of yourTime
+      lcd.print("Din tid: ");
+      lcd.print(yourTime); // This line will print the value of yourTime
       result = timeGuess - yourTime;
-      Serial.print("Result: ");
-      Serial.println(result); // This line will print the result
+      lcd.setCursor(0, 1);
+      lcd.print("Result: ");
+      lcd.print(result); // This line will print the result
       delay(50);
+      buttonPressedCount++;
+      buttonState = 0;
+    }
+    else if(buttonState == HIGH && buttonPressedCount == 6)
+    {
       buttonPressedCount = 1;
       buttonState = 0;
-
       playGame = false;
+      lcd.clear();
     }
 
     delay(100); // Debounce delay
@@ -109,7 +136,7 @@ void updateStopwatch()
 
  if (running) {
  // If running, calculate elapsed time
- time = millis() - startTid;
+  time = millis() - startTid;
  } else {
  // If not running, use the stored elapsed time
   time = elapsedTime;
@@ -121,13 +148,15 @@ void updateStopwatch()
  int milliseconds = (time % 1000) / 10;
 
  // Print the time to the Serial Monitor
- Serial.print("Time: ");
- Serial.print(minutes);
- Serial.print("m ");
- Serial.print(seconds);
- Serial.print("s ");
- Serial.print(milliseconds);
- Serial.println("ms");
+ lcd.setCursor(0, 0);
+ lcd.print("Stopur Time: ");
+ lcd.setCursor(0, 1);
+ lcd.print(minutes);
+ lcd.print("m ");
+ lcd.print(seconds);
+ lcd.print("s ");
+ lcd.print(milliseconds);
+ lcd.print("ms");
 }
 
 
@@ -136,6 +165,7 @@ DS1307 clock;
 void printTime() {
     clock.getTime();
     lcd.setCursor(0, 0);
+    lcd.print("Ur: ");
     lcd.print(clock.hour, DEC);
     lcd.print(":");
     lcd.print(clock.minute, DEC);
@@ -172,54 +202,96 @@ void printTime() {
             lcd.print("SUN");
             break;
     }
-    Serial.println(" ");
+    lcd.print(" ");
 }
 
+void kogAeg(int count)
+{
+  lcd.setCursor(0, 0);
+  lcd.print("Vælg æg type");
 
+ // extern myEnc(5, 4);
+
+  extern int buttonState; 
+  extern const int buttonPin;
+
+  // lav encoder om til godt tal
+  //int encoderValue = myEnc.read();
+  //int encoderValueCount = (encoderValue / 4 * (-1));
+  count = (count % 3) + 1;
+
+  if (count == 1)
+  {
+    lcd.setCursor(0, 1);
+    lcd.print("Blødkogt    ");
+    
+    if (buttonState == HIGH) {
+      GaetTid();
+    } 
+  }
+  if (count == 2)
+  {
+    lcd.setCursor(0, 1);
+    lcd.print("Smilende     ");
+  }
+  if (count == 3)
+  {
+    lcd.setCursor(0, 1);
+    lcd.print("Hårdkogt    ");
+  }
+}
 
 void SwitchState (int count) 
 {
- count = (count % 6) + 1;
+ count = (count % 4) + 1;
 
  extern const int buttonPin;
  //extern int buttonState; 
 
  int buttonState = digitalRead(buttonPin);
 
- if (count == 1 && buttonState == HIGH) 
+ if (count == 1) 
  {
-  GaetTid();
-  elapsedTime = 0;
-  interruptActive = false;
- }
- if (count == 2 && buttonState == HIGH) 
- {
-  // Set the interrupt to active
-  interruptActive = true;
- }
- if (count == 3 && buttonState == HIGH) 
- {
-  printTime();
-  interruptActive = false;
-  elapsedTime = 0;
+  lcd.setCursor(0, 0);
+  lcd.print("Gæt Tiden");
 
- }
- if (count == 4 && buttonState == HIGH) 
- {
   elapsedTime = 0;
   interruptActive = false;
-  Serial.println("Encoder value er 4");
+
+  if (buttonState == HIGH) {
+    GaetTid();
+  }
  }
- if (count == 5 && buttonState == HIGH) 
+ if (count == 2) 
+ { 
+  lcd.setCursor(0, 0);
+  lcd.print("Stopur          ");
+  if (buttonState == HIGH) {
+    // Set the interrupt to active
+    interruptActive = true;
+  }
+ }
+ if (count == 3 ) 
  {
+  lcd.setCursor(0, 0);
+  lcd.print("Ur          ");
+  interruptActive = false;
+  elapsedTime = 0;
+  if (buttonState == HIGH)
+  {
+    printTime();
+  }
+ }
+ if (count == 4) 
+ {
+  lcd.setCursor(0, 0);
+  lcd.print("Kog Æg");
+
   elapsedTime = 0;
   interruptActive = false;
-  Serial.println("Encoder value er 5");
- }
- if (count == 6 && buttonState == HIGH) 
- {
-  elapsedTime = 0;
-  interruptActive = false;
-  Serial.println("Encoder value er 6");
+
+  if (buttonState == HIGH) {
+    GaetTid();
+  }
  }
 }
