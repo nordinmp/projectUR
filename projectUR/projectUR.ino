@@ -9,6 +9,7 @@ rgb_lcd lcd;
 
 
 Encoder myEnc(5, 4);
+Encoder EncBotton(9, 8);
 
 
 const int buttonPin = 3;
@@ -57,6 +58,7 @@ void loop()
 
   // lav encoder om til godt tal
   int encoderValue = myEnc.read();
+  int encoderButtonValue = EncBotton.read();
   int encoderValueCount = (encoderValue / 4 * (-1));
   //SwitchState(encoderValueCount);
 

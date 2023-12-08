@@ -210,36 +210,85 @@ void kogAeg(int count)
   lcd.setCursor(0, 0);
   lcd.print("Vælg æg type");
 
- // extern myEnc(5, 4);
-
-  extern int buttonState; 
   extern const int buttonPin;
-
-  // lav encoder om til godt tal
-  //int encoderValue = myEnc.read();
-  //int encoderValueCount = (encoderValue / 4 * (-1));
+  int buttonState = digitalRead(buttonPin);
   count = (count % 3) + 1;
+
+  long startTime;
+  long time = 0;
+  bool startCountdown = false;
 
   if (count == 1)
   {
     lcd.setCursor(0, 1);
     lcd.print("Blødkogt    ");
-    
-    if (buttonState == HIGH) {
-      GaetTid();
-    } 
+
+    if (buttonState == HIGH)
+    {
+      time = 300000;
+      startTime = millis();
+      startCountdown = true;
+      buttonState = 0;
+    }
   }
   if (count == 2)
   {
     lcd.setCursor(0, 1);
     lcd.print("Smilende     ");
+
+    if (buttonState == HIGH)
+    {
+      time = 420000;
+      startTime = millis();
+      startCountdown = true;
+      buttonState = 0;
+    }
   }
   if (count == 3)
   {
     lcd.setCursor(0, 1);
     lcd.print("Hårdkogt    ");
+
+    if (buttonState == HIGH)
+    {
+      time = 540000;
+      startTime = millis();
+      startCountdown = true;
+      buttonState = 0;
+    }
+  }
+
+  while (startCountdown)
+  {
+    long currentTime = millis();
+    long elapsedTime = currentTime - startTime;
+
+    if (elapsedTime < time)
+    {
+      time -= elapsedTime;
+      startTime = currentTime;
+    }
+    else
+    {
+      time = 0;
+      startCountdown = false;
+    }
+
+    int minutes = time / 60000;
+    int seconds = (time % 60000) / 1000;
+    int milliseconds = (time % 1000) / 10;
+
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print(minutes);
+    lcd.print(":");
+    lcd.print(seconds);
+    lcd.print(":");
+    lcd.print(milliseconds);
+    delay(10);
   }
 }
+
 
 void SwitchState (int count) 
 {
