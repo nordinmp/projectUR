@@ -1,27 +1,25 @@
+#include "state.h"
+
 #include "functions.h"
 #include <Wire.h>
 #include "rgb_lcd.h"
 #include "DS1307.h"
-#include <Encoder.h>
 
 
 rgb_lcd lcd;
 
+State currentState = UR;
 
-Encoder myEnc(5, 4);
-Encoder EncBotton(9, 8);
+
 
 
 const int buttonPin = 3;
 int buttonState = 0; 
-int encoderValue  = 1;
-int encoderValueCount;
+
 
 const int colorR = 255;
 const int colorG = 0;
 const int colorB = 0;
-
-
 
 void setup() 
 {
@@ -33,6 +31,8 @@ void setup()
   Serial.begin(9600);
 
   pinMode(buttonPin, INPUT);
+  pinMode(encoderButtonPin, INPUT);
+
 
   attachInterrupt(digitalPinToInterrupt(buttonPin), startStop, FALLING);
 
@@ -53,21 +53,66 @@ void setup()
 }
 
 
-void loop() 
-{
 
-  // lav encoder om til godt tal
-  int encoderValue = myEnc.read();
-  int encoderButtonValue = EncBotton.read();
-  int encoderValueCount = (encoderValue / 4 * (-1));
-  SwitchState(encoderValueCount);
+
+void loop() {
+ // Read encoder value
+ encoderValue = myEnc.read();
+ int encoderValueCount = (encoderValue / 4 * (-1));
+
+  buttonState = digitalRead(buttonPin);
+
+  Serial.println(encoderValue);
+  Serial.println(buttonState);
+  Serial.println(currentState);
 
   if (interruptActive == true) {
       updateStopwatch();
   }
 
-  //kogAeg(encoderValueCount);
-  //StopUr();
-  // put your main code here, to run repeatedly:
-  //GaetTid();
+ // Print the name of the state that corresponds to the current encoder value
+ if (encoderValueCount == 1) {
+  lcd.setCursor(0, 0);
+  lcd.print("Gæt Tiden           ");
+  if (buttonState == 1) {
+    clickSound();
+    currentState = GAET_TIDEN;
+  }
+ } else if (encoderValueCount == 2) {
+  lcd.setCursor(0, 0);
+  lcd.print("Stopur              ");
+  if (buttonState == 1) {
+    currentState = STOPUR;
+  }
+ } else if (encoderValueCount == 3) {
+  lcd.setCursor(0, 0);
+  lcd.print("Ur                  ");
+  if (buttonState == 1) {
+    currentState = UR;
+  }
+ } else if (encoderValueCount == 4) {
+  lcd.setCursor(0, 0);
+  lcd.print("Kog Æg              ");
+  if (buttonState == 1) {
+    currentState = KOG_AEG;
+  }
+ } 
+
+  // Perform action based on current state
+  switch (currentState) {
+    case GAET_TIDEN:
+      GaetTid();
+      break;
+    case STOPUR:
+      // Set the interrupt to active
+      interruptActive = true;
+      break;
+    case UR:
+      printTime();
+      break;
+    case KOG_AEG:
+      kogAeg();
+      break;
+  }
 }
+

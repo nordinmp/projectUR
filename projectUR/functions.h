@@ -1,10 +1,17 @@
+#include "state.h"
 #include "DS1307.h"
 #include "rgb_lcd.h"
+#include <Encoder.h>
+
 
 extern rgb_lcd lcd;
 
-void SwitchState (int count); // må ikke slettes det er en blank med vilje
 
+Encoder myEnc(5, 4);
+Encoder EncBotton(9, 8);
+
+int encoderButtonPin = 8;
+int encoderValue = 0;
 
 void GaetTid ()
 {
@@ -12,6 +19,8 @@ void GaetTid ()
   extern int buttonState; 
   extern const int buttonPin;
   extern int encoderValueCount;
+
+  extern State currentState;
 
   int timeGuess = random(1000,10000);
 
@@ -22,6 +31,8 @@ void GaetTid ()
   int result = 0;
 
   bool playGame = true;
+
+
 
   while(playGame == true) // We start a loop here to continuously check the button state
   {
@@ -96,7 +107,8 @@ void GaetTid ()
 
     delay(100); // Debounce delay
   } 
-  SwitchState (encoderValueCount);
+
+  currentState = NONE;
 }
 
 extern const int buttonPin;
@@ -110,8 +122,6 @@ unsigned long elapsedTime = 0;
 
 // Define a flag to control when the interrupt should be active
 bool interruptActive = false;
-
-
 
 void startStop() 
 {
@@ -205,64 +215,80 @@ void printTime() {
     lcd.print(" ");
 }
 
-void kogAeg(int count)
-{
-  count = -1;
 
+int encoderValueCount;
+
+void kogAeg()
+{
+  encoderValue = myEnc.read();
+  encoderValue = 0;
+  int encoderValueCount = (encoderValue / 4 * (-1));
+
+  bool chooseEgg = true;
 
   extern const int buttonPin;
+
   int buttonState = digitalRead(buttonPin);
-  count = (count % 3) + 1;
 
   long startTime;
   long time = 0;
-  bool startCountdown = 
-  false;
-  if (count == 0) 
+  bool startCountdown = false;
+  while (chooseEgg) 
   {
+
+    encoderValueCount = (encoderValueCount % 3) + 1;
+
+
+    Serial.println(encoderValueCount);
+  
+
     lcd.setCursor(0, 0);
     lcd.print("Vælg æg type");
-  }
 
-  if (count == 1)
-  {
-    lcd.setCursor(0, 1);
-    lcd.print("Blødkogt    ");
+      if (encoderValueCount == 1)
+      {
+        lcd.setCursor(0, 1);
+        lcd.print("Blødkogt    ");
 
-    if (buttonState == HIGH)
-    {
-      time = 300000;
-      startTime = millis();
-      startCountdown = true;
-      buttonState = 0;
-    }
-  }
-  if (count == 2)
-  {
-    lcd.setCursor(0, 1);
-    lcd.print("Smilende     ");
+        if (buttonState == HIGH)
+        {
+          time = 300000;
+          startTime = millis();
+          startCountdown = true;
+          chooseEgg = false;
+          buttonState = 0;
+        }
+      }
+      if (encoderValueCount == 2)
+      {
+        lcd.setCursor(0, 1);
+        lcd.print("Smilende     ");
 
-    if (buttonState == HIGH)
-    {
-      time = 420000;
-      startTime = millis();
-      startCountdown = true;
-      buttonState = 0;
-    }
-  }
-  if (count == 3)
-  {
-    lcd.setCursor(0, 1);
-    lcd.print("Hårdkogt    ");
+        if (buttonState == HIGH)
+        {
+          time = 420000;
+          startTime = millis();
+          startCountdown = true;
+          chooseEgg = false;
+          buttonState = 0;
+        }
+      }
+      if (encoderValueCount == 3)
+      {
+        lcd.setCursor(0, 1);
+        lcd.print("Hårdkogt    ");
 
-    if (buttonState == HIGH)
-    {
-      time = 540000;
-      startTime = millis();
-      startCountdown = true;
-      buttonState = 0;
-    }
+        if (buttonState == HIGH)
+        {
+          time = 540000;
+          startTime = millis();
+          startCountdown = true;
+          chooseEgg = false;
+          buttonState = 0;
+        }
+      }
   }
+  
 
   while (startCountdown)
   {
@@ -297,58 +323,10 @@ void kogAeg(int count)
   }
 }
 
-
-void SwitchState (int count) 
+void clickSound() 
 {
- count = (count % 4) + 1;
+  digitalWrite(2,HIGH);
+  delay(10);
+  digitalWrite(2,LOW);
 
- extern const int buttonPin;
- //extern int buttonState; 
-
- int buttonState = digitalRead(buttonPin);
-  
- if (count == 1) 
- {
-  lcd.setCursor(0, 0);
-  lcd.print("Gæt Tiden");
-
-  elapsedTime = 0;
-  interruptActive = false;
-
-  if (buttonState == HIGH) {
-    GaetTid();
-  }
- }
- if (count == 2) 
- { 
-  lcd.setCursor(0, 0);
-  lcd.print("Stopur          ");
-  if (buttonState == HIGH) {
-    // Set the interrupt to active
-    interruptActive = true;
-  }
- }
- if (count == 3 ) 
- {
-  lcd.setCursor(0, 0);
-  lcd.print("Ur          ");
-  interruptActive = false;
-  elapsedTime = 0;
-  if (buttonState == HIGH)
-  {
-    printTime();
-  }
- }
- if (count == 4) 
- {
-  lcd.setCursor(0, 0);
-  lcd.print("Kog Æg");
-
-  elapsedTime = 0;
-  interruptActive = false;
-
-  if (buttonState == HIGH) {
-    kogAeg(count);
-  }
- }
 }
