@@ -207,8 +207,8 @@ void printTime() {
 
 void kogAeg(int count)
 {
-  lcd.setCursor(0, 0);
-  lcd.print("Vælg æg type");
+  count = -1;
+
 
   extern const int buttonPin;
   int buttonState = digitalRead(buttonPin);
@@ -216,7 +216,13 @@ void kogAeg(int count)
 
   long startTime;
   long time = 0;
-  bool startCountdown = false;
+  bool startCountdown = 
+  false;
+  if (count == 0) 
+  {
+    lcd.setCursor(0, 0);
+    lcd.print("Vælg æg type");
+  }
 
   if (count == 1)
   {
@@ -278,13 +284,15 @@ void kogAeg(int count)
     int seconds = (time % 60000) / 1000;
     int milliseconds = (time % 1000) / 10;
 
-    lcd.clear();
     lcd.setCursor(0, 0);
+    lcd.print("Æg er klar om:");
+    lcd.setCursor(0, 1);
     lcd.print(minutes);
     lcd.print(":");
     lcd.print(seconds);
     lcd.print(":");
     lcd.print(milliseconds);
+    lcd.print("           ");
     delay(10);
   }
 }
@@ -298,7 +306,7 @@ void SwitchState (int count)
  //extern int buttonState; 
 
  int buttonState = digitalRead(buttonPin);
-
+  
  if (count == 1) 
  {
   lcd.setCursor(0, 0);
@@ -340,7 +348,7 @@ void SwitchState (int count)
   interruptActive = false;
 
   if (buttonState == HIGH) {
-    GaetTid();
+    kogAeg(count);
   }
  }
 }

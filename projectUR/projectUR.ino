@@ -60,13 +60,13 @@ void loop()
   int encoderValue = myEnc.read();
   int encoderButtonValue = EncBotton.read();
   int encoderValueCount = (encoderValue / 4 * (-1));
-  //SwitchState(encoderValueCount);
+  SwitchState(encoderValueCount);
 
   if (interruptActive == true) {
       updateStopwatch();
   }
 
-  kogAeg(encoderValueCount);
+  //kogAeg(encoderValueCount);
   //StopUr();
   // put your main code here, to run repeatedly:
   //GaetTid();
